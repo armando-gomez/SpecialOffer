@@ -1,6 +1,8 @@
 package com.armandogomez.specialoffer;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -46,11 +48,15 @@ public class FenceDataDownloadAsyncTask extends AsyncTask<String, Void, String> 
 				float rad = (float) fObj.getDouble("radius");
 				int type = fObj.getInt("type");
 				String color = fObj.getString("fenceColor");
+				String website = fObj.getString("website");
+				String offer = fObj.getString("message");
+				String logo = fObj.getString("logo");
+				String code = fObj.getString("code");
 
 				LatLng ll = getLatLong(address);
 
 				if (ll != null) {
-					FenceData fd = new FenceData(id, ll.latitude, ll.longitude, address, rad, type, color);
+					FenceData fd = new FenceData(id, ll.latitude, ll.longitude, address, rad, type, color, website, offer, logo, code);
 					fences.add(fd);
 				}
 			}

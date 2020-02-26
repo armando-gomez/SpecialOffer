@@ -3,6 +3,7 @@ package com.armandogomez.specialoffer;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import java.util.List;
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 	private static final String TAG = "GeofenceBroadcastRec";
 	private static final String NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".channel";
+	private NotificationManager notificationManager;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -47,7 +49,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 	}
 
 	public void sendNotification(Context context, int geofenceTransition, FenceData fenceData) {
-		NotificationManager notificationManager = (NotificationManager) context
+		notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
 		if (notificationManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
@@ -59,6 +61,10 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 			notificationManager.createNotificationChannel(channel);
 		}
 
+		Intent resultIntent = new Intent(context, OfferActivity.class);
+		resultIntent.putExtra("FENCE_ID", fenceData.getId());
+
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, getUniqueId(), resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 		// You could build a pending intent here to open an activity when the
 		// notification is tapped. Not doing that here though.
@@ -71,6 +77,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 				.setAutoCancel(true)
 				.setLights(0xff0000ff, 300, 1000) // blue color
 				.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+				.setContentIntent(pendingIntent)
 				.build();
 
 		notificationManager.notify(getUniqueId(), notification);
@@ -79,4 +86,6 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 	private static int getUniqueId() {
 		return (int) (System.currentTimeMillis() % 100000);
 	}
+
+
 }

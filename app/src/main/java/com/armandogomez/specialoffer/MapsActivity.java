@@ -8,6 +8,7 @@ import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -133,7 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 	private void drawFence(FenceData fence) {
 		int line = Color.parseColor(fence.getFenceColor());
-		int fill = ColorUtils.setAlphaComponent(line, 85);
+		int fill = ColorUtils.setAlphaComponent(line, 60);
 
 		LatLng latLng = new LatLng(fence.getLat(), fence.getLon());
 		Circle c = mMap.addCircle(new CircleOptions()
@@ -168,6 +169,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 		}
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.cancelAll();
+	}
 
 	/**
 	 * Manipulates the map once available.
