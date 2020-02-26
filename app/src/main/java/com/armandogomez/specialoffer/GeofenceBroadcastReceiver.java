@@ -30,21 +30,27 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 			return;
 		}
 
-		List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+		int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
-		for(Geofence geofence: triggeringGeofences) {
-			FenceData fenceData = FenceMgr.getFenceData(geofence.getRequestId());
-			sendNotification(context, fenceData);
+		if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
+				geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+			List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+
+			for(Geofence geofence: triggeringGeofences) {
+				FenceData fenceData = FenceMgr.getFenceData(geofence.getRequestId());
+
+				sendNotification(context, geofenceTransition, fenceData);
+			}
 		}
+
+
 	}
 
-	public void sendNotification(Context context, FenceData fenceData) {
+	public void sendNotification(Context context, int geofenceTransition, FenceData fenceData) {
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
 
-		if (notificationManager == null) return;
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+		if (notificationManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 				&& notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
 			String name = context.getString(R.string.app_name);
 			NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
@@ -56,9 +62,8 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
 		// You could build a pending intent here to open an activity when the
 		// notification is tapped. Not doing that here though.
-
 		Notification notification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-				.setSmallIcon(R.drawable.fence_notif)
+				.setSmallIcon(R.drawable.fence_notif2)
 				.setContentTitle("Notification from '" + fenceData.getId() + "' Geofence")
 				.setSubText(fenceData.getId()) // small text at top left
 				.setContentText(fenceData.getAddress()) // Detail info

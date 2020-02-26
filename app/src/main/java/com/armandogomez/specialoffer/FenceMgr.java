@@ -3,15 +3,19 @@ package com.armandogomez.specialoffer;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Geocoder;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -27,6 +31,7 @@ public class FenceMgr {
 	private static final String FENCE_URL = "http://www.christopherhield.com/data/fences.json";
 	private static FenceMgr instance;
 	private Activity activity;
+	private MapsActivity mapsActivity;
 
 
 	public static FenceMgr getInstance(Activity activity) {
@@ -86,9 +91,11 @@ public class FenceMgr {
 					.setTransitionTypes(fence.getType())
 					.setExpirationDuration(Geofence.NEVER_EXPIRE)
 					.build();
+
 			GeofencingRequest geofencingRequest = new GeofencingRequest.Builder()
 					.addGeofence(geofence)
 					.build();
+
 			geofencePendingIntent = getGeofencePendingIntent();
 
 			geofencingClient
@@ -109,4 +116,7 @@ public class FenceMgr {
 		}
 	}
 
+	public static HashMap<String, FenceData> getFenceMap() {
+		return fenceMap;
+	}
 }
